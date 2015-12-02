@@ -8,4 +8,4 @@ Manage gradlefrom inside Atom.
 * ctrl-k ctrl-r: refreshes window
 * ctrl-k ctrl-c: closes window
 
-![image][https://raw.githubusercontent.com/henjue/atom-gradle-manager/master/images/out.gif]
+![image](https://raw.githubusercontent.com/henjue/atom-gradle-manager/master/images/out.gif)
