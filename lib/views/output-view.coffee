@@ -27,8 +27,8 @@ class OutputView extends View
       listItem = $("<li><span class='icon icon-zap'>#{task}</span></li>")
 
       do (task) => listItem.first().on 'click', =>
+        @clear task
         @runTask task
-
       @taskList.append listItem
 
   setupCustomTaskInput: ->
