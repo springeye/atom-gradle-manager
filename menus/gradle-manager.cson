@@ -1,0 +1,14 @@
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Bottom Dock'
+      'submenu': [
+        {
+          'label': 'Add Gradle Pane'
+          'command': 'gradle-manager:add'
+        }
+      ]
+    ]
+  }
+]

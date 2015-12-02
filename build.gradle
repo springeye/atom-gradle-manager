@@ -1,0 +1,17 @@
+//only test
+task tasks1 << {
+    println "the current task name is $name"
+    println "hello world"
+}
+task tasks2 << {
+    println "the current task name is $name"
+    println "hello world"
+}
+task tasks3 << {
+    println "the current task name is $name"
+    println "hello world"
+}
+task tasks4 << {
+    println "the current task name is $name"
+    println "hello world"
+}

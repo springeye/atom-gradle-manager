@@ -1,0 +1,187 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+
+.gradle-pane {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .toolbar {
+    select {
+      min-width: 200px;
+      font-size: @font-size;
+      margin: 2px 0 0 5px;
+      display: inline-block;
+      width: auto;
+      padding: 0;
+      height: 100%;
+      color: @text-color;
+      border-color: @button-border-color;
+      background-color: @button-background-color;
+      &:hover,
+      &:focus {
+        box-shadow: none;
+        background-color: @button-background-color-hover;
+      }
+    }
+
+    .args-input-label {
+      margin: 0 4px 0 4px;
+      font-size: @font-size;
+    }
+
+    .text-editor {
+      line-height: @component-line-height - 3px;
+      height: @component-line-height;
+      width: 200px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    .refresh-button {
+      padding-right: 6px;
+      color: @text-color-info;
+
+      &:hover {
+        color: @background-color-info;
+      }
+
+      &:active {
+        color: @text-color-selected;
+      }
+    }
+
+    .stop-button {
+      padding-right: 4px;
+      color: @text-color-error;
+
+      &:hover {
+        color: @background-color-error;
+      }
+
+      &:active {
+        color: @text-color-selected;
+      }
+    }
+
+    .clear-button {
+      color: @text-color-warning;
+      padding-right: 6px;
+
+      &:hover {
+        color: @background-color-warning;
+      }
+
+      &:active {
+        color: @text-color-selected;
+      }
+    }
+  }
+
+  ul {
+    max-height: 100%;
+    list-style-type: none;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0 0 5px 5px;
+
+    span {
+      cursor: pointer;
+      padding: 3px;
+
+      &:hover {
+        color: @text-color-highlight;
+        background-color: @background-color-selected;
+        border-radius: 3px;
+      }
+
+      &:active {
+        color: @text-color-selected;
+      }
+    }
+  }
+
+  .gradle-view {
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+
+    .file-container {
+      width: 100%;
+      overflow: auto;
+      flex: 1;
+    }
+
+    .args-container {
+      width: 100%;
+      padding: 5px;
+
+      span {
+        font-size: 12px;
+        padding-right: 4px;
+      }
+    }
+  }
+
+  .output-view {
+    height: 100%;
+    display: flex;
+    flex: 1;
+
+    .content-container {
+      display: flex;
+      flex: 1;
+
+      .task-container {
+        padding-top: 5px;
+        flex: 0 0 30%;
+        border-right: 1px solid @base-border-color;
+        padding-right: 5px;
+        display: flex;
+        flex-direction:column;
+
+        .task-list-container {
+          flex: 1 1 0;
+          overflow: auto;
+        }
+
+        .custom-task-container {
+          flex: none;
+          padding: 5px;
+          font-size: 12px;
+        }
+
+        .control-container {
+          padding: 0 5px 5px 5px;
+          font-size: 12px;
+
+          button {
+            width: 50%;
+          }
+        }
+      }
+    }
+
+    .output-container {
+      flex: 1;
+      overflow: auto;
+      padding-left: 10px;
+      background-color: @inset-panel-background-color;
+
+      pre {
+        padding: 0;
+        font-size: @font-size;
+        background-color: @inset-panel-background-color;
+      }
+    }
+  }
+}

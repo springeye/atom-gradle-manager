@@ -1,0 +1,32 @@
+{
+  "name": "gradle-manager",
+  "main": "./lib/main",
+  "version": "0.0.1",
+  "description": "Manage gradle from inside your editor",
+  "keywords": [
+    "gradle",
+    "manager",
+    "gradlefile",
+    "runner"
+  ],
+  "repository": "https://github.com/henjue/atom-gradle-manager",
+  "license": "BSD3",
+  "engines": {
+    "atom": ">=1.0.0"
+  },
+  "dependencies": {
+    "ansi-to-html": "^0.3.0",
+    "atom-bottom-dock": "^0.4.0",
+    "space-pen": "^5.1.1"
+  },
+  "packageDependencies": {
+    "bottom-dock": "^0.2.0"
+  },
+  "consumedServices": {
+    "bottom-dock": {
+      "versions": {
+        "^0.2.0": "consumeBottomDock"
+      }
+    }
+  }
+}
