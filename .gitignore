@@ -4,5 +4,8 @@
 *.iml
 typings
 npm-debug.log
+/.idea
+/typings
+/atom-gradle-manager.iml
 node_modules
 build
