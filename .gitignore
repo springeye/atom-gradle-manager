@@ -1,5 +1,8 @@
 .gradle
 .DS_Store
 npm-debug.log
+/.idea
+/typings
+/atom-gradle-manager.iml
 node_modules
 build
