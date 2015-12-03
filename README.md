@@ -3,7 +3,7 @@
 [![Dependency Status](https://david-dm.org/henjue/atom-gradle-manager.svg)](https://david-dm.org/henjue/atom-gradle-manager)
 [![devDependency Status](https://david-dm.org/henjue/atom-gradle-manager/dev-status.svg)](https://david-dm.org/henjueatom-gradle-manager#info=devDependencies)
 
-Manage gradlefrom inside Atom.
+Manage gradle from inside Atom.
 ## This package requires [bottom-dock](https://atom.io/packages/bottom-dock)
 ##### Commands
 * (mac use control key)
