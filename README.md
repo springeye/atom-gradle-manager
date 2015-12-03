@@ -1,5 +1,7 @@
 # gradle-manager package
-
+[![Build Status](https://travis-ci.org/henjue/atom-gradle-manager.svg?branch=master)](https://travis-ci.org/henjue/atom-gradle-manager)
+[![Dependency Status](https://david-dm.org/henjue/atom-gradle-manager.svg)](https://david-dm.org/henjue/atom-gradle-manager)
+[![devDependency Status](https://david-dm.org/henjue/atom-gradle-manager/dev-status.svg)](https://david-dm.org/henjueatom-gradle-manager#info=devDependencies)
 Manage gradlefrom inside Atom.
 ## This package requires [bottom-dock](https://atom.io/packages/bottom-dock)
 ##### Commands
