@@ -1,5 +1,5 @@
 {BufferedProcess} = require 'atom'
-
+path = require 'path'
 class GradleRunner
   constructor: (@filePath) ->
 
@@ -9,7 +9,12 @@ class GradleRunner
   runGradle: (task, stdout, stderr, exit, extraArgs) ->
     @process?.kill()
     @process = null
-    args=['-b',@filePath]
+    if  path.basename(@filePath)== 'settings.gradle'
+        args=['-c',@filePath]
+    else
+        args=['-b',@filePath]
+
+
     for arg in task.split ' '
       args.push(arg)
 

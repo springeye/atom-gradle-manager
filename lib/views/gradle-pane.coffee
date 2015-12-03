@@ -32,7 +32,7 @@ class GradlePaneView extends DockPaneView
   getGradlefiles: ->
     gradlefiles = []
 
-    for filePath in @fileFinderUtil.findFiles /^build.gradle/i
+    for filePath in @fileFinderUtil.findFiles /^(build|settings).gradle/i
       gradlefiles.push
         path: filePath
         relativePath: FileFinderUtil.getRelativePath filePath
