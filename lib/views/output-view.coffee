@@ -49,34 +49,34 @@ class OutputView extends View
     @writeOutput output, 'text-info'
 
     @taskList.empty()
-    filter=(index,size,task) ->
-        if index>=(size-8) or index<=20
-            true
-        else if task==''
-            true
-        else if task.replaceAll('-','') ==''
-            true
-        else if task is 'Other tasks'
-            true
-        else if task is 'BUILD SUCCESSFUL'
-            true
+    filter = (index, size, task) ->
+      if index >= (size - 8) or index <= 20
+        true
+      else if task == ''
+        true
+      else if task.replaceAll('-', '') == ''
+        true
+      else if task is 'Other tasks'
+        true
+      else if task is 'BUILD SUCCESSFUL'
+        true
 
     onTaskOutput = (output) =>
       @tasks = (task for task in output.split '\n' )
 
-      @handleTask = (task for task,i in @tasks when !filter(i,@tasks.length,task))
+      @handleTask = (task for task,i in @tasks when !filter(i, @tasks.length, task))
 
-      @tasks=[]
+      @tasks = []
       @tasks.push task for task in @handleTask
-      @handleTask=[]
+      @handleTask = []
 
 
       for t,i in @tasks
-          arr=(''+t).split '-'
-          @handleTask.push(arr[0])
+        arr = ('' + t).split '-'
+        @handleTask.push(arr[0])
 
 
-      @tasks=[]
+      @tasks = []
       @tasks.push task for task in @handleTask
 
 
@@ -88,13 +88,15 @@ class OutputView extends View
       else
         @onExit code
 
-    @gradlefileRunner.getGradleTasks onTaskOutput, @onError, onTaskExit, @gradlefile.args
+    @gradlefileRunner.getGradleTasks onTaskOutput, @onOutput, @onError, onTaskExit, @gradlefile.args
 
-  setupGradleRunner: (gradlefile) ->
-    @gradlefileRunner = new GradleRunner gradlefile.path
-
+  setupGradleRunner: (gradlefile, settingsfile) ->
+    if settingsfile?
+      @gradlefileRunner = new GradleRunner gradlefile.path, settingsfile.path
+    else
+      @gradlefileRunner = new GradleRunner gradlefile.path
   runTask: (task) ->
-    @gradlefileRunner?.runGradle task, @onOutput, @onError, @onExit
+    @gradlefileRunner?.runGradle task, null, @onOutput, @onError, @onExit
 
   writeOutput: (line, klass) ->
     return unless line?.length
@@ -126,7 +128,7 @@ class OutputView extends View
   clear: ->
     @outputContainer.empty()
 
-  refresh: (gradlefile) ->
+  refresh: (gradlefile, settingsfile) ->
     @destroy()
     @outputContainer.empty()
     @taskList.empty()
@@ -136,7 +138,8 @@ class OutputView extends View
       return
 
     @gradlefile = gradlefile
-    @setupGradleRunner @gradlefile
+    @settingsfile = settingsfile
+    @setupGradleRunner @gradlefile, @settingsfile
     @addGradleTasks()
 
   destroy: ->

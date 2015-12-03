@@ -1,19 +1,22 @@
 {BufferedProcess} = require 'atom'
-path = require 'path'
+util = require 'util'
+
 class GradleRunner
-  constructor: (@filePath) ->
+  constructor: (@filePath, @settingsPath) ->
 
-  getGradleTasks: (onOutput, onError, onExit, args) ->
-    @runGradle 'tasks', onOutput, onError, onExit, args
+  getGradleTasks: (onTaskOutput, onOutput, onError, onExit, args) ->
+    @runGradle 'tasks', onTaskOutput, onOutput, onError, onExit, args
 
-  runGradle: (task, stdout, stderr, exit, extraArgs) ->
+  runGradle: (task, onTaskOutput, onOutput, stderr, exit, extraArgs) ->
     @process?.kill()
     @process = null
-    if  path.basename(@filePath)== 'settings.gradle'
-        args=['-c',@filePath]
+    if @settingsPath?
+      args = ['-c', @settingsPath]
+      args.push('-b', @filePath)
+      onOutput(util.format('settings.gradle : %s\nbuild.gradle : %s', @settingsPath, @filePath))
     else
-        args=['-b',@filePath]
-
+      args = ['-b', @filePath]
+      onOutput(util.format('build.gradle : %s', @filePath))
 
     for arg in task.split ' '
       args.push(arg)
@@ -26,7 +29,7 @@ class GradleRunner
       args: args
       options:
         env: process.env
-      stdout: stdout
+      stdout: onTaskOutput
       stderr: stderr
       exit: exit
 

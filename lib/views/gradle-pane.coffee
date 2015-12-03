@@ -4,6 +4,7 @@ OutputView = require './output-view'
 ControlsView = require './controls-view'
 FileFinderUtil = require '../file-finder-util'
 {$} = require 'space-pen'
+path = require 'path'
 
 class GradlePaneView extends DockPaneView
   @content: ->
@@ -27,21 +28,30 @@ class GradlePaneView extends DockPaneView
     @subscriptions.add @controlsView.onDidClickStop @stop
     @subscriptions.add @controlsView.onDidClickClear @clear
 
+    @settingsfile = {}
     @getGradlefiles()
 
   getGradlefiles: ->
+    scriptfiles = []
     gradlefiles = []
-
     for filePath in @fileFinderUtil.findFiles /^(build|settings).gradle/i
-      gradlefiles.push
+      scriptfiles.push
         path: filePath
         relativePath: FileFinderUtil.getRelativePath filePath
 
+    for file in scriptfiles
+      if file.relativePath is 'settings.gradle'
+        @settingsfile = file
+      else
+        gradlefiles.push file
+        
     @controlsView.updateGradlefiles gradlefiles
 
   setGradlefile: (gradlefile) =>
-    @outputView.refresh gradlefile
-
+    if @settingsfile?
+      @outputView.refresh gradlefile, @settingsfile
+    else
+      @outputView.refresh gradlefile
   refresh: =>
     @outputView.refresh()
     @getGradlefiles()

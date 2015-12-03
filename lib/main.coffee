@@ -9,7 +9,7 @@ module.exports =
     @gradlePanes = []
 
     packageFound = atom.packages.getAvailablePackageNames()
-      .indexOf('bottom-dock') != -1
+    .indexOf('bottom-dock') != -1
 
     unless packageFound
       atom.notifications.addError 'Could not find Bottom-Dock',

@@ -22,9 +22,9 @@ class FileFinderUtil
       catch
         false
     ).map((path) -> findFilesHelper path, regex)
-      .reduce((results, files) ->
-        results.concat files
-      , [])
+    .reduce((results, files) ->
+      results.concat files
+    , [])
 
   findFilesHelper = (cwd, regex) ->
     dirs = []
@@ -38,7 +38,7 @@ class FileFinderUtil
 
     for entry in entries when entry.indexOf('.') isnt 0
       if regex.test entry
-        files.push(path.join(cwd,entry))
+        files.push(path.join(cwd, entry))
 
       else if entry.indexOf('node_modules') is -1
         abs = path.join cwd, entry
