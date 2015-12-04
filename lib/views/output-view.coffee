@@ -74,9 +74,8 @@ class OutputView extends View
       "#{if code then 'text-error' else 'text-success'}"
 
   stop: ->
-    if Runner
-      Runner.destroy()
-      @writeOutput('Task Stopped', 'text-info')
+    @Runner?.destroy()
+    @writeOutput('Task Stopped', 'text-info')
 
   clear: ->
     @outputContainer.empty()
@@ -89,8 +88,8 @@ class OutputView extends View
     @refreshTasks()
 
   destroy: ->
-    Runner?.destroy()
-    Runner = null
+    @Runner?.destroy()
+    @Runner = null
     @subscriptions?.dispose()
 
 module.exports = OutputView
