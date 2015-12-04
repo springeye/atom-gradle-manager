@@ -19,10 +19,10 @@ class GradlePaneView extends DockPaneView
     @subscriptions = new CompositeDisposable()
     @controlsView = new ControlsView()
 
+
     @outputView.show()
 
     @toolbar.addLeftTile item: @controlsView, priority: 0
-
     @subscriptions.add @controlsView.onDidSelectGradlefile @setGradlefile
     @subscriptions.add @controlsView.onDidClickRefresh @refresh
     @subscriptions.add @controlsView.onDidClickStop @stop

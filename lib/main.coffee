@@ -7,7 +7,6 @@ module.exports =
   activate: (state) ->
     @subscriptions = new CompositeDisposable()
     @gradlePanes = []
-
     packageFound = atom.packages.getAvailablePackageNames()
     .indexOf('bottom-dock') != -1
 

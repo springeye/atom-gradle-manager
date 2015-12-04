@@ -39,7 +39,7 @@ class GradleRunner
       for arg in extraArgs.split ' '
         args.push arg
 
-
+    onOutput util.format('Task: "%s"', task)
     @process = new BufferedProcess
       command: command
       args: args
@@ -48,7 +48,6 @@ class GradleRunner
       stdout: onTaskOutput
       stderr: stderr
       exit: exit
-
   destroy: ->
     @process?.kill()
     @process = null

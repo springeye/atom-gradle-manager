@@ -1,6 +1,7 @@
 {View, $} = require 'space-pen'
 {Emitter, CompositeDisposable} = require 'atom'
 GradleRunner = require '../gradle-runner'
+LeftPane = require './left-pane.coffee'
 Converter = require 'ansi-to-html'
 {Toolbar} = require 'atom-bottom-dock'
 
@@ -8,39 +9,17 @@ class OutputView extends View
   @content: ->
     @div class: 'output-view', style: 'display:flex;', =>
       @div class: 'content-container', =>
-        @div outlet: 'taskContainer', class: 'task-container', =>
-          @div outlet: 'taskListContainer', class: 'task-list-container', =>
-            @ul outlet: 'taskList'
-          @div outlet: 'customTaskContainer', class: 'custom-task-container', =>
-            @span outlet: 'customTaskLabel', class: 'inline-block', 'Custom Task:'
         @div outlet: 'outputContainer', class: 'output-container native-key-bindings', tabindex: -1
 
   initialize: ->
     @emitter = new Emitter()
     @converter = new Converter fg: $('<span>').css('color')
     @subscriptions = new CompositeDisposable()
-
-    @setupCustomTaskInput()
+    @leftPane = new LeftPane()
+    atom.workspace.addRightPanel(item:@leftPane)
 
   setupTaskList: (tasks) ->
-    for task in @tasks.sort()
-      listItem = $("<li><span class='icon icon-zap'>#{task}</span></li>")
-
-      do (task) => listItem.first().on 'click', =>
-        @clear task
-        @runTask task
-      @taskList.append listItem
-
-  setupCustomTaskInput: ->
-    customTaskInput = document.createElement 'atom-text-editor'
-    customTaskInput.setAttribute 'mini', ''
-    customTaskInput.getModel().setPlaceholderText 'Press Enter to run'
-
-    #Run if user presses enter
-    customTaskInput.addEventListener 'keyup', (e) =>
-      @runTask customTaskInput.getModel().getText() if e.keyCode == 13
-
-    @customTaskContainer.append customTaskInput
+    @leftPane.refresh(this,tasks)
 
   addGradleTasks: ->
     @tasks = []
@@ -48,7 +27,6 @@ class OutputView extends View
     output += " with args: #{@gradlefile.args}" if @gradlefile.args
     @writeOutput output, 'text-info'
 
-    @taskList.empty()
     filter = (index, size, task) ->
       if index >= (size - 8) or index <= 20
         true
@@ -95,8 +73,9 @@ class OutputView extends View
       @gradlefileRunner = new GradleRunner gradlefile.path, settingsfile.path
     else
       @gradlefileRunner = new GradleRunner gradlefile.path
-  runTask: (task) ->
-    @gradlefileRunner?.runGradle task, null, @onOutput, @onError, @onExit
+  runTask: (task,args) ->
+
+    @gradlefileRunner?.runGradle task, @onOutput, @onOutput, @onError, @onExit,args
 
   writeOutput: (line, klass) ->
     return unless line?.length
@@ -131,7 +110,6 @@ class OutputView extends View
   refresh: (gradlefile, settingsfile) ->
     @destroy()
     @outputContainer.empty()
-    @taskList.empty()
 
     unless gradlefile
       @gradlefile = null
