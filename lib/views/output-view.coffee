@@ -39,23 +39,28 @@ class OutputView extends View
       else if task is 'BUILD SUCCESSFUL'
         true
 
-    onTaskOutput = (output) =>
-      @tasks = (task for task in output.split '\n' )
+    onTaskOutput = (output,type) =>
+      @writeOutput output, type
+      if type
+        return
+      else
+        console.log 'handler tasks'
+        @tasks = (task for task in output.split '\n' )
 
-      @handleTask = (task for task,i in @tasks when !filter(i, @tasks.length, task))
+        @handleTask = (task for task,i in @tasks when !filter(i, @tasks.length, task))
 
-      @tasks = []
-      @tasks.push task for task in @handleTask
-      @handleTask = []
-
-
-      for t,i in @tasks
-        arr = ('' + t).split '-'
-        @handleTask.push(arr[0])
+        @tasks = []
+        @tasks.push task for task in @handleTask
+        @handleTask = []
 
 
-      @tasks = []
-      @tasks.push task for task in @handleTask
+        for t,i in @tasks
+          arr = ('' + t).split '-'
+          @handleTask.push(arr[0])
+
+
+        @tasks = []
+        @tasks.push task for task in @handleTask
 
 
     onTaskExit = (code) =>
@@ -65,8 +70,7 @@ class OutputView extends View
         @writeOutput "#{@tasks.length} tasks found", "text-info"
       else
         @onExit code
-
-    @gradlefileRunner.getGradleTasks onTaskOutput, @onOutput, @onError, onTaskExit, @gradlefile.args
+    @gradlefileRunner.getGradleTasks onTaskOutput, @onError, onTaskExit, @gradlefile.args
 
   setupGradleRunner: (gradlefile, settingsfile) ->
     if settingsfile?
@@ -75,7 +79,7 @@ class OutputView extends View
       @gradlefileRunner = new GradleRunner gradlefile.path
   runTask: (task,args) ->
 
-    @gradlefileRunner?.runGradle task, @onOutput, @onOutput, @onError, @onExit,args
+    @gradlefileRunner?.runGradle task,  @onOutput, @onError, @onExit,args
 
   writeOutput: (line, klass) ->
     return unless line?.length
@@ -110,7 +114,7 @@ class OutputView extends View
   refresh: (gradlefile, settingsfile) ->
     @destroy()
     @outputContainer.empty()
-
+    @leftPane.clear()
     unless gradlefile
       @gradlefile = null
       return

@@ -2,7 +2,6 @@
 class LeftTaskView extends View
 
   @content:->
-    console.log 'LeftTaskView->content'
     @div outlet:'body',class:'task-container',=>
       @ul outlet:'taskList'
   refresh:(outputView,tasks)->

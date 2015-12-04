@@ -4,11 +4,16 @@ util = require 'util'
 
 class GradleRunner
   constructor: (@filePath, @settingsPath) ->
-    @fileFinderUtil = new FileFinderUtil()
-  getGradleTasks: (onTaskOutput, onOutput, onError, onExit, args) ->
-    @runGradle 'tasks', onTaskOutput, onOutput, onError, onExit, args
 
-  runGradle: (task, onTaskOutput, onOutput, stderr, exit, extraArgs) ->
+
+    @fileFinderUtil = new FileFinderUtil()
+  getGradleTasks: (onOutput, onError, onExit, args) ->
+    @runGradle 'tasks',onOutput, onError, onExit, args
+
+
+  runGradle: (task, onOutput, stderr, exit, extraArgs) ->
+    cwd=atom.project.getPaths()[0]
+
     @process?.kill()
     @process = null
 
@@ -19,18 +24,9 @@ class GradleRunner
       command = commands[0]
     if command is ''
       command = 'gradle'
-    else
-      onOutput(util.format('Execute: "%s"', command))
 
-    ##use settings.gradle when exist
-    if @settingsPath?
-      args = ['-c', @settingsPath]
-      args.push('-b', @filePath)
-      onOutput(util.format('Settings File: "%s"\nBuild File: "%s"', @settingsPath, @filePath))
-    else
-      args = ['-b', @filePath]
-      onOutput(util.format('Build File: "%s"', @filePath))
 
+    args=[]
     ##add options and args
     for arg in task.split ' '
       args.push(arg)
@@ -38,16 +34,21 @@ class GradleRunner
     if extraArgs
       for arg in extraArgs.split ' '
         args.push arg
-
-    onOutput util.format('Task: "%s"', task)
+    onOutput util.format('Path: "%s"', cwd),'text-info'
+    if extraArgs
+      onOutput util.format('Execute: "%s %s %s"', command,task,extraArgs),'text-info'
+    else
+      onOutput util.format('Execute: "%s %s"', command,task),'text-info'
     @process = new BufferedProcess
       command: command
       args: args
       options:
-        env: process.env
-      stdout: onTaskOutput
+        env: process.env,
+        cwd:cwd
+      stdout: onOutput
       stderr: stderr
       exit: exit
+
   destroy: ->
     @process?.kill()
     @process = null
