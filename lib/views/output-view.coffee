@@ -4,7 +4,7 @@ GradleRunner = require '../gradle-runner'
 LeftPane = require './left-pane.coffee'
 Converter = require 'ansi-to-html'
 {Toolbar} = require 'atom-bottom-dock'
-
+Paraser = require '../ParserUtil.coffee'
 class OutputView extends View
   @content: ->
     @div class: 'output-view', style: 'display:flex;', =>
@@ -25,47 +25,20 @@ class OutputView extends View
     @tasks = []
     output = "fetching gradle tasks"
     @writeOutput output, 'text-info'
-
-    filter = (index, size, task) ->
-      if index >= (size - 8) or index <= 20
-        true
-      else if task == ''
-        true
-      else if task.replaceAll('-', '') == ''
-        true
-      else if task is 'Other tasks'
-        true
-      else if task is 'BUILD SUCCESSFUL'
-        true
-
+    parser=new Paraser
     onTaskOutput = (output,type) =>
       @writeOutput output, type
       if type
         return
       else
-        console.log 'handler tasks'
-        @tasks = (task for task in output.split '\n' )
-
-        @handleTask = (task for task,i in @tasks when !filter(i, @tasks.length, task))
-
-        @tasks = []
-        @tasks.push task for task in @handleTask
-        @handleTask = []
-
-
-        for t,i in @tasks
-          arr = ('' + t).split '-'
-          @handleTask.push(arr[0])
-
-
-        @tasks = []
-        @tasks.push task for task in @handleTask
-
+        parser.write(output)
 
     onTaskExit = (code) =>
-      if code is 0
-        @setupTaskList @tasks
 
+      if code is 0
+        @tasks=parser.parser()
+        parser.close()
+        @setupTaskList @tasks
         @writeOutput "#{@tasks.length} tasks found", "text-info"
       else
         @onExit code
@@ -76,7 +49,6 @@ class OutputView extends View
 
 
   runTask: (task,args) ->
-
     @Runner?.runGradle task,  @onOutput, @onError, @onExit,args
 
   writeOutput: (line, klass) ->
