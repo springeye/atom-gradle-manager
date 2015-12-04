@@ -3,10 +3,9 @@ FileFinderUtil = require './file-finder-util'
 util = require 'util'
 
 class GradleRunner
-  constructor: (@filePath, @settingsPath) ->
-
-
+  constructor: () ->
     @fileFinderUtil = new FileFinderUtil()
+
   getGradleTasks: (onOutput, onError, onExit, args) ->
     @runGradle 'tasks',onOutput, onError, onExit, args
 

@@ -21,10 +21,9 @@ class OutputView extends View
   setupTaskList: (tasks) ->
     @leftPane.refresh(this,tasks)
 
-  addGradleTasks: ->
+  refreshTasks: ->
     @tasks = []
-    output = "fetching gradle tasks for #{@gradlefile.relativePath}"
-    output += " with args: #{@gradlefile.args}" if @gradlefile.args
+    output = "fetching gradle tasks"
     @writeOutput output, 'text-info'
 
     filter = (index, size, task) ->
@@ -70,16 +69,15 @@ class OutputView extends View
         @writeOutput "#{@tasks.length} tasks found", "text-info"
       else
         @onExit code
-    @gradlefileRunner.getGradleTasks onTaskOutput, @onError, onTaskExit, @gradlefile.args
+    @Runner.getGradleTasks onTaskOutput, @onError, onTaskExit
 
-  setupGradleRunner: (gradlefile, settingsfile) ->
-    if settingsfile?
-      @gradlefileRunner = new GradleRunner gradlefile.path, settingsfile.path
-    else
-      @gradlefileRunner = new GradleRunner gradlefile.path
+  setupGradleRunner: () ->
+      @Runner = new GradleRunner
+
+
   runTask: (task,args) ->
 
-    @gradlefileRunner?.runGradle task,  @onOutput, @onError, @onExit,args
+    @Runner?.runGradle task,  @onOutput, @onError, @onExit,args
 
   writeOutput: (line, klass) ->
     return unless line?.length
@@ -104,29 +102,23 @@ class OutputView extends View
       "#{if code then 'text-error' else 'text-success'}"
 
   stop: ->
-    if @gradlefileRunner
-      @gradlefileRunner.destroy()
+    if Runner
+      Runner.destroy()
       @writeOutput('Task Stopped', 'text-info')
 
   clear: ->
     @outputContainer.empty()
 
-  refresh: (gradlefile, settingsfile) ->
+  refreshUIAndTask: ->
     @destroy()
     @outputContainer.empty()
     @leftPane.clear()
-    unless gradlefile
-      @gradlefile = null
-      return
-
-    @gradlefile = gradlefile
-    @settingsfile = settingsfile
-    @setupGradleRunner @gradlefile, @settingsfile
-    @addGradleTasks()
+    @setupGradleRunner()
+    @refreshTasks()
 
   destroy: ->
-    @gradlefileRunner?.destroy()
-    @gradlefileRunner = null
+    Runner?.destroy()
+    Runner = null
     @subscriptions?.dispose()
 
 module.exports = OutputView

@@ -23,38 +23,24 @@ class GradlePaneView extends DockPaneView
     @outputView.show()
 
     @toolbar.addLeftTile item: @controlsView, priority: 0
-    @subscriptions.add @controlsView.onDidSelectGradlefile @setGradlefile
+    @subscriptions.add @controlsView.onDidInputCustom @inputCustom
     @subscriptions.add @controlsView.onDidClickRefresh @refresh
     @subscriptions.add @controlsView.onDidClickStop @stop
     @subscriptions.add @controlsView.onDidClickClear @clear
 
-    @settingsfile = {}
-    @getGradlefiles()
+    @outputView.refreshUIAndTask()
 
-  getGradlefiles: ->
-    scriptfiles = []
-    gradlefiles = []
-    for filePath in @fileFinderUtil.findFiles /^(build|settings).gradle/i
-      scriptfiles.push
-        path: filePath
-        relativePath: FileFinderUtil.getRelativePath filePath
 
-    for file in scriptfiles
-      if file.relativePath is 'settings.gradle'
-        @settingsfile = file
-      else
-        gradlefiles.push file
-        
-    @controlsView.updateGradlefiles gradlefiles
-
-  setGradlefile: (gradlefile) =>
-    if @settingsfile?
-      @outputView.refresh gradlefile, @settingsfile
-    else
-      @outputView.refresh gradlefile
   refresh: =>
-    @outputView.refresh()
-    @getGradlefiles()
+    @outputView.refreshUIAndTask()
+
+  inputCustom: (task) =>
+    args=task.split(' ')
+    if args.length>1
+      @outputView.runTask args[0],args.join(' ')
+    else
+      @outputView.runTask task
+
 
   stop: =>
     @outputView.stop()
