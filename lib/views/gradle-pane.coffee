@@ -4,6 +4,7 @@ OutputView = require './output-view'
 ControlsView = require './controls-view'
 FileFinderUtil = require '../file-finder-util'
 {$} = require 'space-pen'
+path = require 'path'
 
 class GradlePaneView extends DockPaneView
   @content: ->
@@ -18,33 +19,28 @@ class GradlePaneView extends DockPaneView
     @subscriptions = new CompositeDisposable()
     @controlsView = new ControlsView()
 
+
     @outputView.show()
 
     @toolbar.addLeftTile item: @controlsView, priority: 0
-
-    @subscriptions.add @controlsView.onDidSelectGradlefile @setGradlefile
+    @subscriptions.add @controlsView.onDidInputCustom @inputCustom
     @subscriptions.add @controlsView.onDidClickRefresh @refresh
     @subscriptions.add @controlsView.onDidClickStop @stop
     @subscriptions.add @controlsView.onDidClickClear @clear
 
-    @getGradlefiles()
+    @outputView.refreshUIAndTask()
 
-  getGradlefiles: ->
-    gradlefiles = []
-
-    for filePath in @fileFinderUtil.findFiles /^build.gradle/i
-      gradlefiles.push
-        path: filePath
-        relativePath: FileFinderUtil.getRelativePath filePath
-
-    @controlsView.updateGradlefiles gradlefiles
-
-  setGradlefile: (gradlefile) =>
-    @outputView.refresh gradlefile
 
   refresh: =>
-    @outputView.refresh()
-    @getGradlefiles()
+    @outputView.refreshUIAndTask()
+
+  inputCustom: (task) =>
+    args=task.split(' ')
+    if args.length>1
+      @outputView.runTask args[0],args.join(' ')
+    else
+      @outputView.runTask task
+
 
   stop: =>
     @outputView.stop()

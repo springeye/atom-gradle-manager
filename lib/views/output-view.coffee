@@ -1,100 +1,55 @@
 {View, $} = require 'space-pen'
 {Emitter, CompositeDisposable} = require 'atom'
 GradleRunner = require '../gradle-runner'
+LeftPane = require './left-pane.coffee'
 Converter = require 'ansi-to-html'
 {Toolbar} = require 'atom-bottom-dock'
-
+Paraser = require '../ParserUtil.coffee'
 class OutputView extends View
   @content: ->
     @div class: 'output-view', style: 'display:flex;', =>
       @div class: 'content-container', =>
-        @div outlet: 'taskContainer', class: 'task-container', =>
-          @div outlet: 'taskListContainer', class: 'task-list-container', =>
-            @ul outlet: 'taskList'
-          @div outlet: 'customTaskContainer', class: 'custom-task-container', =>
-            @span outlet: 'customTaskLabel', class: 'inline-block', 'Custom Task:'
         @div outlet: 'outputContainer', class: 'output-container native-key-bindings', tabindex: -1
 
   initialize: ->
     @emitter = new Emitter()
     @converter = new Converter fg: $('<span>').css('color')
     @subscriptions = new CompositeDisposable()
-
-    @setupCustomTaskInput()
+    @leftPane = new LeftPane()
+    atom.workspace.addRightPanel(item:@leftPane)
 
   setupTaskList: (tasks) ->
-    for task in @tasks.sort()
-      listItem = $("<li><span class='icon icon-zap'>#{task}</span></li>")
+    @leftPane.refresh(this,tasks)
 
-      do (task) => listItem.first().on 'click', =>
-        @clear task
-        @runTask task
-      @taskList.append listItem
-
-  setupCustomTaskInput: ->
-    customTaskInput = document.createElement 'atom-text-editor'
-    customTaskInput.setAttribute 'mini', ''
-    customTaskInput.getModel().setPlaceholderText 'Press Enter to run'
-
-    #Run if user presses enter
-    customTaskInput.addEventListener 'keyup', (e) =>
-      @runTask customTaskInput.getModel().getText() if e.keyCode == 13
-
-    @customTaskContainer.append customTaskInput
-
-  addGradleTasks: ->
+  refreshTasks: ->
     @tasks = []
-    output = "fetching gradle tasks for #{@gradlefile.relativePath}"
-    output += " with args: #{@gradlefile.args}" if @gradlefile.args
+    output = "fetching gradle tasks"
     @writeOutput output, 'text-info'
-
-    @taskList.empty()
-    filter=(index,size,task) ->
-        if index>=(size-8) or index<=20
-            true
-        else if task==''
-            true
-        else if task.replaceAll('-','') ==''
-            true
-        else if task is 'Other tasks'
-            true
-        else if task is 'BUILD SUCCESSFUL'
-            true
-
-    onTaskOutput = (output) =>
-      @tasks = (task for task in output.split '\n' )
-
-      @handleTask = (task for task,i in @tasks when !filter(i,@tasks.length,task))
-
-      @tasks=[]
-      @tasks.push task for task in @handleTask
-      @handleTask=[]
-
-
-      for t,i in @tasks
-          arr=(''+t).split '-'
-          @handleTask.push(arr[0])
-
-
-      @tasks=[]
-      @tasks.push task for task in @handleTask
-
+    parser=new Paraser
+    onTaskOutput = (output,type) =>
+      @writeOutput output, type
+      if type
+        return
+      else
+        parser.write(output)
 
     onTaskExit = (code) =>
-      if code is 0
-        @setupTaskList @tasks
 
+      if code is 0
+        @tasks=parser.parser()
+        parser.close()
+        @setupTaskList @tasks
         @writeOutput "#{@tasks.length} tasks found", "text-info"
       else
         @onExit code
+    @Runner.getGradleTasks onTaskOutput, @onError, onTaskExit
 
-    @gradlefileRunner.getGradleTasks onTaskOutput, @onError, onTaskExit, @gradlefile.args
+  setupGradleRunner: () ->
+      @Runner = new GradleRunner
 
-  setupGradleRunner: (gradlefile) ->
-    @gradlefileRunner = new GradleRunner gradlefile.path
 
-  runTask: (task) ->
-    @gradlefileRunner?.runGradle task, @onOutput, @onError, @onExit
+  runTask: (task,args) ->
+    @Runner?.runGradle task,  @onOutput, @onError, @onExit,args
 
   writeOutput: (line, klass) ->
     return unless line?.length
@@ -119,29 +74,22 @@ class OutputView extends View
       "#{if code then 'text-error' else 'text-success'}"
 
   stop: ->
-    if @gradlefileRunner
-      @gradlefileRunner.destroy()
-      @writeOutput('Task Stopped', 'text-info')
+    @Runner?.destroy()
+    @writeOutput('Task Stopped', 'text-info')
 
   clear: ->
     @outputContainer.empty()
 
-  refresh: (gradlefile) ->
+  refreshUIAndTask: ->
     @destroy()
     @outputContainer.empty()
-    @taskList.empty()
-
-    unless gradlefile
-      @gradlefile = null
-      return
-
-    @gradlefile = gradlefile
-    @setupGradleRunner @gradlefile
-    @addGradleTasks()
+    @leftPane.clear()
+    @setupGradleRunner()
+    @refreshTasks()
 
   destroy: ->
-    @gradlefileRunner?.destroy()
-    @gradlefileRunner = null
+    @Runner?.destroy()
+    @Runner = null
     @subscriptions?.dispose()
 
 module.exports = OutputView
