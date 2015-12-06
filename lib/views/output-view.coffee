@@ -15,11 +15,11 @@ class OutputView extends View
     @emitter = new Emitter()
     @converter = new Converter fg: $('<span>').css('color')
     @subscriptions = new CompositeDisposable()
-    @leftPane = new LeftPane()
-    atom.workspace.addRightPanel(item:@leftPane)
+    @leftPaneItem = new LeftPane()
+    @leftPane=atom.workspace.addRightPanel(item:@leftPaneItem)
 
   setupTaskList: (tasks) ->
-    @leftPane.refresh(this,tasks)
+    @leftPaneItem.refresh(this,tasks)
 
   refreshTasks: ->
     @tasks = []
@@ -81,13 +81,13 @@ class OutputView extends View
     @outputContainer.empty()
 
   refreshUIAndTask: ->
-    @destroy()
     @outputContainer.empty()
-    @leftPane.clear()
+    @leftPaneItem.clear()
     @setupGradleRunner()
     @refreshTasks()
 
   destroy: ->
+    @leftPane.destroy()
     @Runner?.destroy()
     @Runner = null
     @subscriptions?.dispose()

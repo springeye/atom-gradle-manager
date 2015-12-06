@@ -6,7 +6,6 @@ GradlePane = require './views/gradle-pane'
 module.exports =
   activate: (state) ->
     @subscriptions = new CompositeDisposable()
-    @gradlePanes = []
     packageFound = atom.packages.getAvailablePackageNames()
     .indexOf('bottom-dock') != -1
 
@@ -18,22 +17,21 @@ module.exports =
 
     @subscriptions.add atom.commands.add 'atom-workspace',
       'gradle-manager:add': => @add()
+  deleteCallback:(id)=>
+
+    console.log 'test:'+@newPane
 
   consumeBottomDock: (@bottomDock) ->
+    @bottomDock.onDidDeletePane @deleteCallback
     @add()
+
 
   add: ->
     if @bottomDock
-      newPane = new GradlePane()
-      @gradlePanes.push newPane
-
-      config =
-        name: 'Gradle'
-        id: newPane.getId()
-        active: newPane.isActive()
-
-      @bottomDock.addPane newPane, 'Gradle'
+      console.log @bottomDock.isActive()#Still output true without showing bottom-dock
+      @newPane = new GradlePane()
+      @bottomDock.addPane @newPane, 'Gradle'
 
   deactivate: ->
     @subscriptions.dispose()
-    @bottomDock.deletePane pane.getId() for pane in @gradlePanes
+    @bottomDock.deletePane @newPane.getId()
