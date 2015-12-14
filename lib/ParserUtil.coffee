@@ -2,9 +2,9 @@ class ParserFactory
   filter:(index, size, task) ->
     if index >= (size - 8) or index <= 20
       true
-    else if task == ''
+    else if task is ''
       true
-    else if task.replaceAll('-', '') == ''
+    else if task.replace(new RegExp(/-/g),'') is ''
       true
     else if task is 'Other tasks'
       true
