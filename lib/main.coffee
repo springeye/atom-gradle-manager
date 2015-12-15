@@ -4,6 +4,12 @@
 GradlePane = require './views/gradle-pane'
 
 module.exports =
+  config:
+      gradle_home:
+          type:'string'
+          title:'Gradle Home (Default Use Environment)'
+          default:''
+          description: "Gradle Home Dir"
   activate: (state) ->
     @subscriptions = new CompositeDisposable()
     packageFound = atom.packages.getAvailablePackageNames()

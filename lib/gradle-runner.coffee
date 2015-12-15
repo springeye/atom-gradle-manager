@@ -1,10 +1,12 @@
 {BufferedProcess} = require 'atom'
+path = require 'path'
 FileFinderUtil = require './file-finder-util'
 util = require 'util'
 
 class GradleRunner
   constructor: () ->
     @fileFinderUtil = new FileFinderUtil()
+    @gradleHome=atom.config.get('gradle-manager.gradle_home')
 
   getGradleTasks: (onOutput, onError, onExit, args) ->
     @runGradle 'tasks',onOutput, onError, onExit, args
@@ -15,14 +17,23 @@ class GradleRunner
 
     @process?.kill()
     @process = null
-
+    win= process.platform.indexOf 'win'
     ##get run command
     command = ''
-    commands = @fileFinderUtil.findFiles if process.platform.indexOf 'win' == 0 then /^gradlew\.bat$/i else /^gradlew$/i
+    commands = @fileFinderUtil.findFiles unless win then /^gradlew\.bat$/i else /^gradlew$/i
     if commands.length > 0
       command = commands[0]
     if command is ''
-      command = 'gradle'
+      if @gradleHome?.trim()
+          unless win
+              command= path.join @gradleHome,'/bin/gradle.bat'
+          else
+              command= path.join @gradleHome,'/bin/gradle'
+      else
+          unless win
+              command = 'gradle.bat'
+          else
+              command = 'gradle'
 
 
     args=[]
