@@ -2,7 +2,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'Bottom Dock'
+      'label': 'bottom-dock'
       'submenu': [
         {
           'label': 'Add Gradle Pane'

@@ -2,14 +2,17 @@ class ParserFactory
   filter:(index, size, task) ->
     if index >= (size - 8) or index <= 20
       true
-    else if task == ''
+    else if @isEmpty task
       true
-    else if task.replaceAll('-', '') == ''
+    else if @isEmpty task.replace(/\-/g, '')
       true
-    else if task is 'Other tasks'
+    else if task.trim() is 'Other tasks'
       true
-    else if task is 'BUILD SUCCESSFUL'
+    else if task.trim() is 'BUILD SUCCESSFUL'
       true
+    else
+      false
+
   constructor:->
     @text=''
   write:(out)->
@@ -34,6 +37,7 @@ class ParserFactory
     return @tasks
   close:->
     @text=''
-
+  isEmpty:(s)->
+    !s?.trim()
 
 module.exports = ParserFactory
