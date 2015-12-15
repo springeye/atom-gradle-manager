@@ -1,7 +1,7 @@
 {
   "name": "gradle-manager",
   "main": "./lib/main",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Manage gradle from inside your editor",
   "keywords": [
     "gradle",
