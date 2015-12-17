@@ -16,8 +16,10 @@ class OutputView extends View
     @converter = new Converter fg: $('<span>').css('color')
     @subscriptions = new CompositeDisposable()
     @leftPaneItem = new LeftPane()
-    @leftPane=atom.workspace.addRightPanel(item:@leftPaneItem)
-
+    @leftPane=atom.workspace.addRightPanel(item:@leftPaneItem,visible:false)
+  show:()->
+    super
+    @leftPane.show()
   setupTaskList: (tasks) ->
     @leftPaneItem.refresh(this,tasks)
 
