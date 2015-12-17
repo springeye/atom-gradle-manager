@@ -5,6 +5,7 @@
 
 Manage gradle from inside Atom.
 ## This package requires [bottom-dock](https://atom.io/packages/bottom-dock)
+### [changelog](changelog.md)
 ##### Commands
 * (mac use control key)
 * ctrl-k ctrl-t: toggles panel
